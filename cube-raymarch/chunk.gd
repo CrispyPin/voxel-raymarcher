@@ -12,7 +12,11 @@ func _ready():
 	for x in range(32):
 		for z in range(32):
 			set_raw(x, 0, z, Color(x/32.0,z/32.0, randf()*0.25+0.25, 1))
-	
+			set_raw(x, 31, z, Color(x/32.0,z/32.0, randf()*0.25+0.25, 1))
+			if randf() < 0.4:
+				set_raw(x, 1, z, Color(randf(), randf(), randf(), 1))
+			if randf() < 0.05:
+				set_raw(x, 2, z, Color(randf(), randf(), randf(), 1))	
 			
 	get_surface_material(0).set_shader_param("voxels", voxels)
 
