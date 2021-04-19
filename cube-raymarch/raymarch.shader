@@ -15,7 +15,7 @@ float absmaxcomp(in vec3 p ) {return absmax(p.x, absmax(p.y, p.z));}
 vec4 get_voxel(vec3 pos) {
 	if (pos != clamp(pos, vec3(0), vec3(32))) return vec4(0);
 	return texture(voxels, pos / grid_size);
-}
+}	
 
 vec3 get_normal(vec3 pos) {
 	pos = fract(pos);
@@ -34,13 +34,12 @@ vec4 plane_march(vec3 cam_pos, vec3 surf_pos) {
 	while (ray_len <= 100.0 && steps < 200) {
 		steps++;
 		vec3 p = ro + ray_len * ray_dir;
-		vec4 col = get_voxel(p);
+		vec4 col = get_voxel(p - fract(p)+0.5);
 		if (col.a > 0.) {
-			//vec3 norm = normalize(floor(prev_p) - floor(p));
 			vec3 norm = get_normal(p);
 			float sun_light = clamp(dot(norm, normalize(vec3(1., 8., 2.))), 0, 1);
 			sun_light = max(sun_light, 0.0);
-			sun_light = sun_light*0.8+0.1;
+			sun_light = sun_light*0.4+0.1;
 			col.rgb *= vec3(sun_light);
 			//col = vec4(vec3(float(steps)/200.), 1);
 			return col;
