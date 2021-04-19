@@ -19,10 +19,18 @@ vec4 get_voxel(vec3 pos) {
 
 vec3 get_normal(vec3 pos) {
 	pos = fract(pos);
-	pos = normalize(pos - 0.5); // centered coords = sphere normals
-	vec3 norm = step(pos, vec3(absmaxcomp(pos)));
-	norm = normalize(norm);
-	return norm;
+	pos = normalize(pos - 0.5); // centered coords
+	vec3 norm;
+	if (pos.x == absmaxcomp(pos)) {
+		norm = vec3(1,0,0) * sign(pos.x);
+	}
+	else if (pos.y == absmaxcomp(pos)) {
+		norm = vec3(0,1,0) * sign(pos.y);
+	}
+	else {
+		norm = vec3(0,0,1) * sign(pos.z);
+	}
+	return normalize(norm);
 }
 
 vec4 plane_march(vec3 cam_pos, vec3 surf_pos) {
@@ -41,6 +49,7 @@ vec4 plane_march(vec3 cam_pos, vec3 surf_pos) {
 			sun_light = max(sun_light, 0.0);
 			sun_light = sun_light*0.4+0.1;
 			col.rgb *= vec3(sun_light);
+			//col.rgb = norm*0.5+0.5;
 			//col = vec4(vec3(float(steps)/200.), 1);
 			return col;
 		}
