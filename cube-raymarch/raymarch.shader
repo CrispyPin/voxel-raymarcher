@@ -12,7 +12,8 @@ void vertex() {
 }
 
 vec4 get_voxel(vec3 pos) {
-	return texture(voxels, pos / grid_size, 0);
+	if (pos != clamp(pos, vec3(0), vec3(32))) return vec4(0);
+	return texture(voxels, floor(pos) / grid_size, 0);
 }
 
 vec4 plane_march(vec3 cam_pos, vec3 surf_pos) {
@@ -36,22 +37,19 @@ vec4 plane_march(vec3 cam_pos, vec3 surf_pos) {
 		
 		vec3 deltas = (step(0, ray_dir) - fract(p)) / ray_dir;
 		//deltas = fract(p) / ray_dir;
-		ray_len += max(mincomp(deltas), 0.01);
+		ray_len += max(mincomp(deltas), 0.001);
 		prev_p = p;
 	}
-	return vec4(1., 0., 0., 0.);
+	return vec4(0.0);
 }
 
 void fragment() {
 	vec3 surface_pos = (CAMERA_MATRIX * vec4(VERTEX, 1.0)).xyz;
-	//vec3 cam_pos = (CAMERA_MATRIX * vec4(0., 0., 0., 0.)).xyz;
 	vec3 cam_pos = CAMERA_MATRIX[3].xyz;
-	//cam_pos.z /= INV_CAMERA_MATRIX[3].w;
 	vec4 col = plane_march(cam_pos, surface_pos);
-	ALBEDO = col.xyz;
-	//ALBEDO = cam_pos/4.;
+	ALBEDO = col.rgb;
 	if (col.a < 0.1) {
 		discard;
 	}
-	//ALBEDO = texture(voxels, vec3(SCREEN_UV, 1)).rgb;
+	
 }
