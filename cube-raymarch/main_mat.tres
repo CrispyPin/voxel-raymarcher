@@ -4,3 +4,6 @@
 
 [resource]
 shader = ExtResource( 1 )
+shader_param/voxel_count = null
+shader_param/voxel_size = null
+shader_param/chunk_size = null

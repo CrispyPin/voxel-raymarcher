@@ -1,19 +1,23 @@
 extends MeshInstance
 
+export var voxel_count = 64
+export var voxel_size = 0.5
+var chunk_size = voxel_count * voxel_size;
+
 var voxels = Texture3D.new()
 var _voxel = Image.new()
 
 func _ready():
-	voxels.create(32, 32, 32, Image.FORMAT_RGBA8, 0)
+	voxels.create(voxel_count, voxel_count, voxel_count, Image.FORMAT_RGBA8, 0)
 	_voxel.create(1, 1, false, Image.FORMAT_RGBA8)
 	
 	_voxel.lock()
 	_fill_raw(Color(0,0,0,0))
 	
-	for x in range(32):
-		for z in range(32):
-			set_raw(x, 0, z, Color(x/32.0,z/32.0, randf()*0.25+0.25, 1))
-			set_raw(x, 31, z, Color(x/32.0,z/32.0, randf()*0.25+0.25, 1))
+	for x in range(voxel_count):
+		for z in range(voxel_count):
+			set_raw(x, 0, z, Color(x/64.0, z/64.0, randf()*0.25+0.25, 1))
+			set_raw(x, voxel_count-1, z, Color(x/64.0, z/64.0, randf()*0.25+0.25, 1))
 			if randf() < 0.4:
 				set_raw(x, 1, z, Color(randf(), randf(), randf(), 1))
 			if randf() < 0.05:
@@ -21,6 +25,9 @@ func _ready():
 	
 	set_raw(8,8,8, Color(randf(), randf(), randf(), 1))
 			
+	get_surface_material(0).set_shader_param("voxel_count", voxel_count)
+	get_surface_material(0).set_shader_param("voxel_size", voxel_size)
+	get_surface_material(0).set_shader_param("chunk_size", chunk_size)
 	get_surface_material(0).set_shader_param("voxels", voxels)
 
 func _process(_delta):
