@@ -4,9 +4,9 @@ var voxels = Texture3D.new()
 var _voxel = Image.new()
 
 func _ready():
-	voxels.create(32, 32, 32, Image.FORMAT_RGBA8)
-	voxels.flags = 0
+	voxels.create(32, 32, 32, Image.FORMAT_RGBA8, 0)
 	_voxel.create(1, 1, false, Image.FORMAT_RGBA8)
+	
 	_voxel.lock()
 	_fill_raw(Color(0,0,0,0))
 	

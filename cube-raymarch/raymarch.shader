@@ -2,6 +2,7 @@ shader_type spatial;
 render_mode unshaded, cull_disabled;
 
 uniform sampler3D voxels;
+const vec3 sun_pos = vec3(3, 8, 5);
 const float grid_size = 32.;
 
 float mincomp(in vec3 p ) { return min(p.x,min(p.y,p.z));}
@@ -33,30 +34,32 @@ vec3 get_normal(vec3 pos) {
 	return normalize(norm);
 }
 
+vec4 light_point(vec3 pos) {
+	vec4 col = get_voxel(pos - fract(pos)+0.5);
+	vec3 norm = get_normal(pos);
+	float sun_light = clamp(dot(norm, normalize(sun_pos)), 0, 1);
+	sun_light = max(sun_light, 0.0);
+	sun_light = sun_light*0.4+0.1;
+	col.rgb *= sun_light;
+	//col.rgb = norm*0.5+0.5;
+	//col = vec4(vec3(float(steps)/200.), 1);
+	return col;
+}
+
 vec4 plane_march(vec3 cam_pos, vec3 surf_pos) {
 	vec3 ro = cam_pos;
 	vec3 ray_dir = normalize(surf_pos - ro);
 	float ray_len = 0.0;
 	int steps = 0;
-	vec3 prev_p = ro;
 	while (ray_len <= 100.0 && steps < 200) {
 		steps++;
 		vec3 p = ro + ray_len * ray_dir;
-		vec4 col = get_voxel(p - fract(p)+0.5);
-		if (col.a > 0.) {
-			vec3 norm = get_normal(p);
-			float sun_light = clamp(dot(norm, normalize(vec3(1., 8., 2.))), 0, 1);
-			sun_light = max(sun_light, 0.0);
-			sun_light = sun_light*0.4+0.1;
-			col.rgb *= vec3(sun_light);
-			//col.rgb = norm*0.5+0.5;
-			//col = vec4(vec3(float(steps)/200.), 1);
-			return col;
+		float solid = get_voxel(p - fract(p)+0.5).a;
+		if (solid > 0.) {
+			return light_point(p);
 		}
-		
 		vec3 deltas = (step(0, ray_dir) - fract(p)) / ray_dir;
 		ray_len += max(mincomp(deltas), 0.001);
-		prev_p = p;
 	}
 	return vec4(0.0);
 }
