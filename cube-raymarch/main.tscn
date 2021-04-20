@@ -16,7 +16,7 @@ material/0 = ExtResource( 1 )
 script = ExtResource( 3 )
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.02789, 2.85439, 8.34048 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 8, 8 )
 script = ExtResource( 2 )
 smoothness = 0.0
 pitch_limit = 90

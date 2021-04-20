@@ -51,7 +51,7 @@ vec4 light_point(vec3 pos, int steps) {
 	sun_light = sun_light*0.4+0.1;
 	col.rgb *= sun_light;
 	//col.rgb = norm*0.5+0.5;
-	//col = vec4(vec3(float(steps)/200.), 1);
+	//col.rgb += vec3(float(steps)/512.);
 	return col;
 }
 
@@ -59,7 +59,7 @@ void plane_march(in vec3 ray_start, in vec3 ray_dir, out vec3 hit_point, out int
 	float ray_len = 0.0;
 	steps = 0;
 	vec3 p;
-	while (ray_len <= 100.0 && steps < 200 && p == clamp(p, -0.1, 32.1)) {
+	while (ray_len <= 100.0 && steps < 512 && p == clamp(p, -0.1, 64.1)) {
 		steps++;
 		p = ray_start + ray_len * ray_dir;
 		float solid = get_voxel(p).a;
@@ -72,7 +72,7 @@ void plane_march(in vec3 ray_start, in vec3 ray_dir, out vec3 hit_point, out int
 		
 		vec3 deltas = (step(0, ray_dir) - fract(world_to_voxel(p))) / ray_dir;
 		deltas *= voxel_size;
-		ray_len += max(mincomp(deltas), 0.001);
+		ray_len += max(mincomp(deltas), 0.0001);
 	}
 	hit = false;
 	dist = ray_len;
