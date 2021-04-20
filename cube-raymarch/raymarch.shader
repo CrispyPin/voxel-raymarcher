@@ -46,14 +46,17 @@ vec4 light_point(vec3 pos) {
 	return col;
 }
 
-vec4 plane_march(vec3 cam_pos, vec3 surf_pos) {
-	vec3 ro = cam_pos;
+vec4 plane_march(vec3 ro, vec3 surf_pos, bool outside_mesh) {
 	vec3 ray_dir = normalize(surf_pos - ro);
 	float ray_len = 0.0;
+	if (outside_mesh){
+		ray_len = length(surf_pos - ro);
+	}
 	int steps = 0;
-	while (ray_len <= 100.0 && steps < 200) {
+	vec3 p;
+	while (ray_len <= 100.0 && steps < 200 && p == clamp(p, -0.5, 32.5)) {
 		steps++;
-		vec3 p = ro + ray_len * ray_dir;
+		p = ro + ray_len * ray_dir;
 		float solid = get_voxel(p - fract(p)+0.5).a;
 		if (solid > 0.) {
 			return light_point(p);
@@ -67,7 +70,7 @@ vec4 plane_march(vec3 cam_pos, vec3 surf_pos) {
 void fragment() {
 	vec3 surface_pos = (CAMERA_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	vec3 cam_pos = CAMERA_MATRIX[3].xyz;
-	vec4 col = plane_march(cam_pos, surface_pos);
+	vec4 col = plane_march(cam_pos, surface_pos, FRONT_FACING);
 	ALBEDO = col.rgb;
 	if (col.a < 0.1) {
 		discard;
