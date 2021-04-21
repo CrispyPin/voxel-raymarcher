@@ -43,6 +43,7 @@ vec3 get_normal(vec3 wpos) {
 	return normalize(norm);
 }
 
+
 vec4 light_point(vec3 pos, int steps) {
 	vec4 col = get_voxel(pos);
 	vec3 norm = get_normal(pos);
@@ -79,6 +80,17 @@ void plane_march(in vec3 ray_start, in vec3 ray_dir, out vec3 hit_point, out int
 	return;
 }
 
+float shadow(vec3 pos, vec3 sun_dir) {
+	vec3 hit_point;
+	int steps;
+	float dist;
+	bool hit;
+	plane_march(pos + sun_dir*0.01, sun_dir, hit_point, steps, dist, hit);
+	//float shadow = float(steps)/10.;
+	float shadow = 1. - float(hit)*0.7;
+	return shadow;
+}
+
 void fragment() {
 	vec3 surface_pos = (CAMERA_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	vec3 cam_pos = CAMERA_MATRIX[3].xyz;
@@ -92,7 +104,7 @@ void fragment() {
 	plane_march(ray_start, ray_dir, hit_point, steps, dist, hit);
 	
 	vec4 col = light_point(hit_point, steps);
-	ALBEDO = col.rgb;
+	ALBEDO = col.rgb * shadow(hit_point, normalize(sun_pos));
 	if (!hit) {
 		discard;
 	}
