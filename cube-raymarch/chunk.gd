@@ -1,7 +1,7 @@
 extends MeshInstance
 
-export var voxel_count = 64
-export var voxel_size = 0.5#0.03125
+export var voxel_count = 32
+export var voxel_size = 1
 var chunk_size = voxel_count * voxel_size;
 
 var voxels = Texture3D.new()

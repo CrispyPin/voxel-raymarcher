@@ -57,7 +57,7 @@ vec4 light_point(vec3 pos, int steps) {
 }
 
 void plane_march(in vec3 ray_start, in vec3 ray_dir, out vec3 hit_point, out int steps, out float dist, out bool hit) {
-	float ray_len = 0.0;
+	float ray_len = 0.;
 	steps = 0;
 	vec3 p;
 	while (ray_len <= 100.0 && steps < 512 && p == clamp(p, -0.1, 64.1)) {
@@ -102,8 +102,8 @@ void fragment() {
 	float dist;
 	bool hit;
 	plane_march(ray_start, ray_dir, hit_point, steps, dist, hit);
-	
 	vec4 col = light_point(hit_point, steps);
+	//if (steps == 1) col *= vec4(1,.1,.1,1);
 	ALBEDO = col.rgb * shadow(hit_point, normalize(sun_pos));
 	if (!hit) {
 		discard;
